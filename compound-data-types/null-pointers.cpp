@@ -92,13 +92,23 @@ int main()
     // if (d2) std::cout << *d2 << '\n';
     // What I saw:
 
-    // ---------- 7. Quiz answers (I tried first, then checked) ----------
-    // 1a. Yes: ptr == nullptr, or if (ptr).
-    // 1b. No. That's why invalid pointers should be set to nullptr.
-    // 2a. predictable   2b. predictable   2c. predictable
-    // 2d. undefined     2e. undefined
-    // 2f. possibly undefined: fine if valid, undefined if dangling.
-    // 3.  So a simple null check is enough to know a pointer is safe to use.
+    // ---------- 7. Quiz (I tried first, then checked) ----------
+    // Q1a. Can we tell if a pointer is null? How?
+    //      A: Yes, ptr == nullptr, or if (ptr).
+    // Q1b. Can we tell if a non-null pointer is valid or dangling?
+    //      A: No. That's why invalid pointers should be set to nullptr.
+    //
+    // Q2. Predictable, undefined, or possibly undefined?
+    // 2a. Assigning an object's address to a non-const pointer -> predictable
+    // 2b. Assigning nullptr to a pointer                       -> predictable
+    // 2c. Dereferencing a pointer to a valid object            -> predictable
+    // 2d. Dereferencing a dangling pointer                     -> undefined
+    // 2e. Dereferencing a null pointer                         -> undefined
+    // 2f. Dereferencing a non-null pointer                     -> possibly undefined
+    //     (fine if it's valid, undefined if it's dangling)
+    //
+    // Q3. Why set pointers that aren't pointing at a valid object to nullptr?
+    //     A: So a simple null check is enough to know the pointer is safe to use.
 
     return 0;
 }
