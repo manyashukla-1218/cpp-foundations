@@ -84,14 +84,85 @@ int main()
     // }                              // y destroyed, dangling is now invalid
     // std::cout << *dangling;        // undefined behavior
 
-    // ---------- 10. Quiz Q2: what's wrong here? ----------
+    // ---------- 10. Quiz Q1: what does this print? ----------
+    // Question (assume short is 2 bytes, 32-bit machine):
+    //   short value{7}; short otherValue{3}; short* qptr{&value};
+    //   Print &value, value, qptr, *qptr.
+    //   Then *qptr = 9 and print all four again.
+    //   Then qptr = &otherValue and print all four again.
+    //   Finally print sizeof(qptr) and sizeof(*qptr).
+    //
+    // ANSWER (lesson's version, with its example addresses):
+    //   0012FF60   <- &value
+    //   7          <- value
+    //   0012FF60   <- qptr (holds value's address, same as &value)
+    //   7          <- *qptr (the object qptr points at is value)
+    //
+    //   0012FF60   <- &value (address never changes)
+    //   9          <- value (changed through the pointer: *qptr = 9)
+    //   0012FF60   <- qptr (still points at value)
+    //   9          <- *qptr
+    //
+    //   0012FF54   <- &otherValue
+    //   3          <- otherValue
+    //   0012FF54   <- qptr (now points at otherValue)
+    //   3          <- *qptr
+    //
+    //   4          <- sizeof(qptr): a pointer is 4 bytes on a 32-bit machine
+    //   2          <- sizeof(*qptr): that's sizeof(short)
+    //
+    // Why: *qptr = 9 changes the VALUE at the address (value becomes 9).
+    //      qptr = &otherValue changes WHERE the pointer points.
+    // On my 64-bit machine the addresses will differ and sizeof(qptr) is 8.
+    short value { 7 };
+    short otherValue { 3 };
+    short* qptr { &value };
+
+    std::cout << &value << '\n';
+    std::cout << value << '\n';
+    std::cout << qptr << '\n';
+    std::cout << *qptr << '\n';
+    std::cout << '\n';
+
+    *qptr = 9;
+
+    std::cout << &value << '\n';
+    std::cout << value << '\n';
+    std::cout << qptr << '\n';
+    std::cout << *qptr << '\n';
+    std::cout << '\n';
+
+    qptr = &otherValue;
+
+    std::cout << &otherValue << '\n';
+    std::cout << otherValue << '\n';
+    std::cout << qptr << '\n';
+    std::cout << *qptr << '\n';
+    std::cout << '\n';
+
+    std::cout << sizeof(qptr) << '\n';     // 8 on 64-bit (4 on 32-bit)
+    std::cout << sizeof(*qptr) << '\n';    // 2 (size of a short)
+
+    // ---------- 11. Quiz Q2: what's wrong with this code? ----------
+    // Question:
+    //   int v1{45};
+    //   int* q{&v1};
+    //   int v2{78};
+    //   *q = &v2;    // assign q to the address of v2 (that was the intent)
+    //
+    // Answer: *q is an int (it's v1), but &v2 is an int* (an address).
+    //         You can't put an address into an int, so it won't compile.
+    //         To point q at v2:         q = &v2;
+    //         To copy v2's value to v1: *q = v2;
+    //
+    // To see the real error, uncomment the lines below:
     // int v1 { 45 };
     // int* q { &v1 };
     // int v2 { 78 };
-    // *q = &v2;      // Error I got:
-    // My explanation:
+    // *q = &v2;
+    // Error I got:
 
-    // ---------- 11. Experiments (uncomment ONE at a time) ----------
+    // ---------- 12. Experiments (uncomment ONE at a time) ----------
     // Paste the exact compiler error next to each line, then comment it out again.
     // int* bad1 { &d };   // Error I got:
     // int* bad2 { 5 };    // Error I got:
